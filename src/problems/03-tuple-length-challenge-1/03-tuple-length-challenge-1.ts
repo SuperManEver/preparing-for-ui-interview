@@ -16,7 +16,7 @@ import type { Equal, Expect } from '@course/types'
 
 /* _____________ Your Code Here _____________ */
 
-type Length = {};
+type Length<T extends readonly any[]> = T['length']
 
 /* _____________ Test Cases _____________ */
 
@@ -31,3 +31,5 @@ type cases = [
   // @ts-expect-error strings are not valid tuples
   Length<'hello world'>,
 ]
+
+type Result = 'a' | 'b' extends 'a' ? true : false
