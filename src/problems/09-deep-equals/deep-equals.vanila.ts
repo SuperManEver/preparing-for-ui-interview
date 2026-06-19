@@ -14,13 +14,24 @@ export function deepEquals(
   b: any,
   store = new Map<any, Set<any>>(),
 ): boolean {
+  /**
+   * 1. strict equality check
+   *
+   */
   if (a === b) {
     return true
   }
 
+  // ??
+
   if (store.has(a) && store.get(a)!.has(b)) {
     return true
   }
+
+  /**
+   * 2. retrieve types of A and B
+   * if types are not equal it means they are not equal
+   */
 
   const [typeA, typeB] = [getType(a), getType(b)]
 
@@ -58,13 +69,15 @@ export function deepEquals(
 // --- Examples ---
 // Uncomment to test your implementation:
 
-// console.log(deepEquals(1, 1))                          // Expected: true
-// console.log(deepEquals('hello', 'hello'))               // Expected: true
-// console.log(deepEquals(null, undefined))                // Expected: false
-// console.log(deepEquals([1, 2, 3], [1, 2, 3]))          // Expected: true
-// console.log(deepEquals({ a: 1, b: 2 }, { b: 2, a: 1 })) // Expected: true
-// console.log(deepEquals({ a: 1 }, { a: 2 }))            // Expected: false
+console.log(deepEquals(1, 1)) // Expected: true
+console.log(deepEquals('hello', 'hello')) // Expected: true
+console.log(deepEquals(null, undefined)) // Expected: false
+console.log(deepEquals([1, 2, 3], [1, 2, 3])) // Expected: true
+console.log(deepEquals({ a: 1, b: 2 }, { b: 2, a: 1 })) // Expected: true
+console.log(deepEquals({ a: 1 }, { a: 2 })) // Expected: false
 
-// const a: any = { value: 1 }; a.self = a
-// const b: any = { value: 1 }; b.self = b
-// console.log(deepEquals(a, b))                           // Expected: true (circular)
+const a: any = { value: 1 }
+a.self = a
+const b: any = { value: 1 }
+b.self = b
+console.log(deepEquals(a, b)) // Expected: true (circular)
