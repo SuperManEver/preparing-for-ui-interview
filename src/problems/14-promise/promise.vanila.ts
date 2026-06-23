@@ -6,6 +6,21 @@ const PENDING: PromiseStatus = 'pending'
 const FULFILLED: PromiseStatus = 'fulfilled'
 const REJECTED: PromiseStatus = 'rejected'
 
+type Executor<T> = (
+  resolve: (value: T | PromiseLike<T>) => void,
+  reject: (reason?: any) => void,
+) => void
+
+type OnFulfilled<T, R> = ((value: T) => R | PromiseLike<R>) | undefined | null
+type OnRejected<R> = ((reason: any) => R | PromiseLike<R>) | undefined | null
+
+interface Handler<T> {
+  onFulfilled: (value: T) => any
+  onRejected: (reason: any) => any
+  resolve: (value: any) => void
+  reject: (reason: any) => void
+}
+
 // Step 1: Define types and constants
 //  - Executor
 //  - OnFulfilled<T,R>
@@ -22,18 +37,74 @@ const REJECTED: PromiseStatus = 'rejected'
 // - Run tests for then / catch and chaining
 // Step 7: static resolve, static reject
 // - Run tests for statics
-export class MyPromise {
-  constructor(executor: any) {}
+export class MyPromise<T = any> {
+  #handlers: Handler<T>[] = []
+  status: PromiseStatus = PENDING
+  value: T | any
+  #isResolved: boolean = false
 
-  then() {
+  #resolve = (v: T | PromiseLike<T>): void => void this.#settle(v, FULFILLED)
+  #reject = (e: any): void => void this.#settle(e, REJECTED)
+
+  #settle = (v: T | any, status: PromiseStatus = FULFILLED): void => {
+    console.log('#settle')
+
+    if (this.#isResolved) {
+      return
+    }
+
+    this.#isResolved = true
+
+    console.log('settle: continue to be resolved')
+
+    const update = (v: T | any): void => {
+      console.log('#settle -> status: ', status)
+
+      this.value = v
+      this.status = status
+      this.#execute()
+
+      console.log('MyPromise: ', this, v, status)
+    }
+
+    if (v instanceof MyPromise) {
+      v.then(update)
+    } else {
+      update(v)
+    }
+  }
+
+  #execute = (): void => {
+    console.log('#execute')
+  }
+
+  constructor(executor: Executor<T>) {
+    console.log('constructor!')
+
+    this.status = PENDING
+    this.#isResolved = false
+    try {
+      executor(this.#resolve, this.#reject)
+    } catch (e) {
+      this.#reject(e)
+    }
+  }
+
+  then<R = T>(
+    onFulfilled?: OnFulfilled<T, R>,
+    onRejected?: OnRejected<R>,
+  ): MyPromise<R> {
     throw new Error('Not implemented')
   }
+
   catch() {
     throw new Error('Not implemented')
   }
+
   static resolve() {
     throw new Error('Not implemented')
   }
+
   static reject() {
     throw new Error('Not implemented')
   }
@@ -46,8 +117,8 @@ export class MyPromise {
 // const p1 = new MyPromise((resolve: any) => resolve(42))
 // console.log(p1) // Expected: MyPromise { status: 'fulfilled', value: 42 }
 //
-// const p2 = new MyPromise((_: any, reject: any) => reject('error'))
-// console.log(p2) // Expected: MyPromise { status: 'rejected', value: 'error' }
+const p2 = new MyPromise((_: any, reject: any) => reject('error'))
+console.log(p2) // Expected: MyPromise { status: 'rejected', value: 'error' }
 //
 // const p3 = new MyPromise(() => { throw new Error('oops') })
 // console.log(p3) // Expected: MyPromise { status: 'rejected', value: Error: oops }

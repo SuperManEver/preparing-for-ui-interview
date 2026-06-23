@@ -28,6 +28,7 @@ export class MyPromise<T = any> {
   #settle = (v: T | any, status: PromiseStatus = FULFILLED): void => {
     if (this.#isResolved) return
     this.#isResolved = true
+
     const update = (v: T | any): void => {
       this.#value = v
       this.#status = status
@@ -73,9 +74,13 @@ export class MyPromise<T = any> {
     }
   }
 
-  then<R = T>(onFulfilled?: OnFulfilled<T, R>, onRejected?: OnRejected<R>): MyPromise<R> {
+  then<R = T>(
+    onFulfilled?: OnFulfilled<T, R>,
+    onRejected?: OnRejected<R>,
+  ): MyPromise<R> {
     const handler: Handler<T> = {
-      onFulfilled: typeof onFulfilled === 'function' ? onFulfilled : (v: T) => v as any,
+      onFulfilled:
+        typeof onFulfilled === 'function' ? onFulfilled : (v: T) => v as any,
       onRejected:
         typeof onRejected === 'function'
           ? onRejected
