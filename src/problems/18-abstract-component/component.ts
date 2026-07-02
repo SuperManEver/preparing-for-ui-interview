@@ -19,7 +19,10 @@ const DEFAULT_CONFIG: Partial<TComponentConfig<any>> = {
   tag: 'div',
 }
 
-type TComponentListener = { type: string; callback: EventListenerOrEventListenerObject }
+type TComponentListener = {
+  type: string
+  callback: EventListenerOrEventListenerObject
+}
 
 /**
  * @param type
@@ -41,7 +44,9 @@ export abstract class AbstractComponent<T extends object> {
    * - Initializes events as an empty array
    */
   constructor(config: TComponentConfig<T>) {
-    // TODO: implement
+    this.config = { ...DEFAULT_CONFIG, ...config }
+    this.container = null
+    this.events = []
   }
 
   /**
@@ -56,7 +61,34 @@ export abstract class AbstractComponent<T extends object> {
    *   - Store { type, callback } in this.events array
    */
   init() {
-    // TODO: implement
+    this.container = document.createElement(
+      this.config.tag as keyof HTMLElementTagNameMap,
+    )
+
+    if (this.config.className) {
+      for (const className of this.config.className) {
+        this.container.classList.add(className)
+      }
+    }
+
+    this.events = (this.config.listeners || []).map((type) => {
+      const event = toEventName(type)
+      // @ts-expect-error - we need to handle both native and custom events - event handler is not defined
+      let callback = this[event]
+      if (!callback) {
+        throw Error(`handler ${event} for ${type} is not implemented`)
+      }
+
+      const handler = { type, callback }
+
+      // not sure about that
+      this.events.push(handler)
+
+      callback = callback.bind(this)
+      this.container!.addEventListener(type, callback)
+
+      return handler
+    })
   }
 
   afterRender() {}
@@ -70,7 +102,11 @@ export abstract class AbstractComponent<T extends object> {
    * - Call afterRender() hook
    */
   render() {
-    // TODO: implement
+    if (this.container) this.destroy()
+    this.init()
+    this.container!.innerHTML = this.toHTML()
+    this.config.root.appendChild(this.container!)
+    this.afterRender()
   }
 
   toHTML(): string {
@@ -84,6 +120,10 @@ export abstract class AbstractComponent<T extends object> {
    * - Remove the container from the DOM
    */
   destroy() {
-    // TODO: implement
+    this.events.forEach(({ type, callback }) => {
+      this.container!.removeEventListener(type, callback)
+    })
+    this.events = []
+    this.container!.remove()
   }
 }
