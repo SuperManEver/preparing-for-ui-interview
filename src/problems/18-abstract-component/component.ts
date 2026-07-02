@@ -82,7 +82,7 @@ export abstract class AbstractComponent<T extends object> {
       const handler = { type, callback }
 
       // not sure about that
-      this.events.push(handler)
+      // this.events.push(handler)
 
       callback = callback.bind(this)
       this.container!.addEventListener(type, callback)
