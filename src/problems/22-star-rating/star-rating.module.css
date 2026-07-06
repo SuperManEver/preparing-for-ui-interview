@@ -2,17 +2,6 @@
 .container {
 }
 
-/* Base star style (provided) */
-.star {
-  cursor: pointer;
-  width: 2rem;
-  height: 2rem;
-  background: none;
-  border: none;
-  transition: opacity 0.2s ease-in-out;
-  opacity: 1;
-}
-
 /* Disabled/Readonly state (provided) */
 .star:disabled,
 .star[aria-readonly='true'] {
@@ -23,4 +12,25 @@
 /* Dimmed state for inactive stars (provided) */
 .star[data-checked='false'] {
   opacity: 0.4;
+}
+
+/* Base star style */
+.star {
+  cursor: pointer;
+  width: 2rem;
+  height: 2rem;
+  background: none;
+  border: none;
+  transition: opacity 0.2s ease-in-out;
+  opacity: 1;
+  -webkit-text-stroke: 1px black;
+  text-shadow:
+    -1px -1px 0 #000,
+    1px -1px 0 #000,
+    -1px 1px 0 #000,
+    1px 1px 0 #000;
+}
+
+.notActive {
+  opacity: 0.5;
 }

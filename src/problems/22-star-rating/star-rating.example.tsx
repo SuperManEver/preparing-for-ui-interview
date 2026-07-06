@@ -41,7 +41,8 @@ export const StarRatingVanillaExample = () => {
   const [rating, setRating] = useState(0)
 
   useEffect(() => {
-    if (!containerRef.current || !readonly3Ref.current || !readonly5Ref.current) return
+    if (!containerRef.current || !readonly3Ref.current || !readonly5Ref.current)
+      return
 
     ratingRef.current = new StarRating({
       root: containerRef.current,
@@ -100,7 +101,9 @@ export const StarRatingVanillaExample = () => {
   )
 }
 export const StarRatingStudentExample = () => {
-  return <StarRatingStudent />
+  const [rating, setRating] = useState(0)
+
+  return <StarRatingStudent value={rating} onChange={setRating} />
 }
 
 export const StarRatingStudentVanillaExample = () => {
@@ -115,7 +118,8 @@ export const StarRatingStudentVanillaExample = () => {
   const [rating, setRating] = useState(0)
 
   useEffect(() => {
-    if (!containerRef.current || !readonly3Ref.current || !readonly5Ref.current) return
+    if (!containerRef.current || !readonly3Ref.current || !readonly5Ref.current)
+      return
 
     ratingRef.current = new StarRatingStudentVanilla({
       root: containerRef.current,

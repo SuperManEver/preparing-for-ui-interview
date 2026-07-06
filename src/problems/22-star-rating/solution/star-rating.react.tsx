@@ -10,7 +10,11 @@ type TStarRatingProps = {
   value: number
   onChange: (value: number) => void
 }
-export const StarRatingComponent = ({ readonly, value, onChange }: TStarRatingProps) => {
+export const StarRatingComponent = ({
+  readonly,
+  value,
+  onChange,
+}: TStarRatingProps) => {
   const handleStarClick = useCallback(
     (event: React.MouseEvent<HTMLDivElement>) => {
       if (readonly) return
@@ -46,7 +50,7 @@ export const StarRatingComponent = ({ readonly, value, onChange }: TStarRatingPr
               role="radio"
               type="button"
               key={index}
-              data-active={value >= starValue}
+              data-active={starValue <= value}
               disabled={readonly}
             >
               <span>{emoji}</span>
