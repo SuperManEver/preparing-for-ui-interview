@@ -20,6 +20,8 @@ import type { Equal, Expect } from '@course/types'
 
 /* _____________ Test Cases _____________ */
 
+type LookUp<U, T> = U extends { type: T } ? U : never
+
 interface Cat {
   type: 'cat'
   breeds: 'Abyssinian' | 'Shorthair' | 'Curl' | 'Bengal'
@@ -33,4 +35,7 @@ interface Dog {
 
 type Animal = Cat | Dog
 
-type cases = [Expect<Equal<LookUp<Animal, 'dog'>, Dog>>, Expect<Equal<LookUp<Animal, 'cat'>, Cat>>]
+type cases = [
+  Expect<Equal<LookUp<Animal, 'dog'>, Dog>>,
+  Expect<Equal<LookUp<Animal, 'cat'>, Cat>>,
+]
